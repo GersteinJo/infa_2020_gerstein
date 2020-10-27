@@ -14,7 +14,7 @@ canv.pack(fill=tk.BOTH, expand=1)
 
 
 class ball():
-    def __init__(self, x=40, y=450):
+    def __init__(self, r, x=40, y=450):
         """ Конструктор класса ball
 
         Args:
@@ -25,10 +25,10 @@ class ball():
         self.timelive = 5
         self.x = x
         self.y = y
-        self.r = 10
+        self.r = r
         self.vx = 10
         self.vy = 100
-        self.color = choice(['blue', 'green', 'red', 'brown'])
+        self.color = choice(['blue', 'green', 'black', 'brown'])
         self.id = canv.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -93,7 +93,7 @@ class ball():
 
 class gun():
     def __init__(self):
-        self.f2_power = 110
+        self.f2_power = 140
         self.f2_on = 0
         self.an = 1
         self.id = canv.create_line(20,450,50,420,width=7) # FIXME: don't know how to set it...
@@ -115,14 +115,13 @@ class gun():
         """
         global balls, bullet
         bullet += 1
-        new_ball = ball()
-        new_ball.r += 5
+        new_ball = ball(30 / 140 * self.f2_power)
         self.an = math.atan((event.y-new_ball.y) / (event.x-new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = - self.f2_power * math.sin(self.an)
         balls += [new_ball]
         self.f2_on = 0
-        self.f2_power = 140
+        self.f2_power = 90
 
     def targetting(self, event=0):
         """Прицеливание. Зависит от положения мыши."""
@@ -149,10 +148,11 @@ class gun():
         '''
         if self.f2_on:
             if self.f2_power < 140:
-                self.f2_power += 1
+                self.f2_power += 5
             canv.itemconfig(self.id, fill='orange')
         else:
             canv.itemconfig(self.id, fill='black')
+        
             
     def hit_targ(self, targ, points = 10):
         '''
@@ -260,7 +260,7 @@ def new_game(event=''):
     frame_period = 0.025
 
     z = 0.03
-    while len(targets) > 0:# or balls:
+    while len(targets) > 0:
         canv.bind('<Button-1>', g1.fire2_start)
         canv.bind('<ButtonRelease-1>', g1.fire2_end)
         canv.bind('<Motion>', g1.targetting)
